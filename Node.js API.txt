@@ -1,0 +1,21 @@
+// server.js
+const express = require('express');
+const tf = require('@tensorflow/tfjs-node');
+const tmImage = require('@tensorflow-models/teachablemachine');
+
+const app = express();
+const MODEL_URL = "https://storage.googleapis.com/tm-model/UQnxo3JgE/model.json";
+let model;
+
+(async () => {
+  model = await tmImage.load(MODEL_URL);
+  console.log("Model loaded");
+})();
+
+app.post('/predict', express.json(), async (req, res) => {
+  const { image } = req.body; // Expect base64 image
+  const predictions = await model.predict(image);
+  res.json(predictions);
+});
+
+app.listen(process.env.PORT || 3000);
